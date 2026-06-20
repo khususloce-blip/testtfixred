@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 
-module.exports = async (req, res) => {
+// GANTI BAGIAN ATAS INI
+export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -45,4 +46,4 @@ module.exports = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ sukses: false, pesan: error.message });
     }
-}
+} // MEMAKAI TANDA TUTUP KURUNG BIASA
