@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Support Messenger</title>
+    <style>
+        :root {
+            --primary: #00e676;
+            --primary-glow: rgba(0, 230, 118, 0.3);
+            --bg: #0b141a;
+            --surface: #111b21;
+            --text: #e9edef;
+            --text-muted: #8696a0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-glow);
+            filter: blur(100px);
+            border-radius: 50%;
+            top: -50px;
+            right: -50px;
+        }
+
+        .container {
+            background-color: var(--surface);
+            padding: 35px 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 230, 118, 0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+        }
+
+        .logo-area {
+            width: 65px;
+            height: 65px;
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+
+        .logo-area svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--primary);
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 16px;
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 16px 16px 48px;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #00e676 0%, #00b4d8 100%);
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.5);
+        }
+
+        button:disabled {
+            background: #202c33;
+            color: #667781;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+
+        .modal-icon.success { background: rgba(0,230,118,0.1); border: 1px solid var(--primary); fill: var(--primary); }
+        .modal-icon.error { background: rgba(255,70,70,0.1); border: 1px solid #ff4646; fill: #ff4646; }
+
+        .modal h3 { margin-bottom: 10px; font-size: 18px; }
+        .modal p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+        .modal-btn {
+            background: #202c33;
+            color: #fff;
+            padding: 10px 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-area">
+        <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.666.988 3.396 1.472 5.351 1.472 5.464 0 9.905-4.439 9.908-9.904.002-2.646-1.02-5.136-2.88-6.996-1.858-1.858-4.343-2.88-6.984-2.88-5.475 0-9.916 4.439-9.919 9.904-.001 1.84.475 3.636 1.38 5.231l-.955 3.486 3.599-.944z"/></svg>
+    </div>
+    <h2>WhatsApp Support</h2>
+    <p class="subtitle">Kirim laporan otomatis via serverless gateway</p>
+
+    <div class="form-group">
+        <label>Nomor Telepon WhatsApp</label>
+        <div class="input-wrapper">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            <input type="text" id="telepon" placeholder="Contoh: +62812345678910" autocomplete="off">
+        </div>
+    </div>
+
+    <button id="submitBtn" onclick="kirimData()">
+        <span class="btn-text">Kirim Laporan</span>
+        <div class="spinner" id="btnSpinner"></div>
+    </button>
+</div>
+
+<div class="modal-overlay" id="alertModal">
+    <div class="modal">
+        <div class="modal-icon" id="modalIcon"></div>
+        <h3 id="modalTitle">Notifikasi</h3>
+        <p id="modalBody">Pesan sistem</p>
+        <button class="modal-btn" onclick="closeModal()">Selesai</button>
+    </div>
+</div>
+
+<script>
+    function showModal(title, message, isSuccess) {
+        const modal = document.getElementById('alertModal');
+        const mIcon = document.getElementById('modalIcon');
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerText = message;
+        
+        if(isSuccess) {
+            mIcon.className = "modal-icon success";
+            mIcon.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>';
+        } else {
+            mIcon.className = "modal-icon error";
+            mIcon.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/></svg>';
+        }
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('alertModal').classList.remove('active');
+    }
+
+    async function kirimData() {
+        const telepon = document.getElementById('telepon').value.trim();
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const btnText = btn.querySelector('.btn-text');
+
+        if (!telepon) {
+            showModal('Gagal', 'Silakan masukkan nomor telepon terlebih dahulu.', false);
+            return;
+        }
+
+        btn.disabled = true;
+        spinner.style.display = 'block';
+        btnText.style.opacity = '0.5';
+
+        try {
+            // Ini akan otomatis diarahkan oleh vercel.json ke kirim.js di root
+            const respon = await fetch('/api/kirim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telepon })
+            });
+
+            const hasil = await respon.json();
+            if (hasil.sukses) {
+                showModal('Berhasil', 'Email laporan otomatis dalam Bahasa Mandarin telah sukses dikirim ke WhatsApp Support!', true);
+                document.getElementById('telepon').value = '';
+            } else {
+                showModal('Gagal', 'Server mendeteksi masalah: ' + hasil.pesan, false);
+            }
+        } catch (error) {
+            showModal('Masalah Koneksi', 'Tidak bisa menghubungi server Vercel. Pastikan server aktif.', false);
+        } finally {
+            btn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.style.opacity = '1';
+        }
+    }
+</script>
+</body>
+</html>
